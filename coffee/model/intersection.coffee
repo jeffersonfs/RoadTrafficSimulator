@@ -3,6 +3,7 @@
 require '../helpers'
 _ = require 'underscore'
 ControlSignals = require './control-signals'
+ControlSignals3 = require './control-signals3'
 Rect = require '../geom/rect'
 
 class Intersection
@@ -10,7 +11,7 @@ class Intersection
     @id = _.uniqueId 'intersection'
     @roads = []
     @inRoads = []
-    @controlSignals = new ControlSignals this
+    @controlSignals = new ControlSignals3 this
 
   @copy: (intersection) ->
     intersection.rect = Rect.copy intersection.rect
@@ -18,7 +19,7 @@ class Intersection
     _.extend result, intersection
     result.roads = []
     result.inRoads = []
-    result.controlSignals = new ControlSignals result
+    result.controlSignals = new ControlSignals3 result
     result
 
   toJSON: ->

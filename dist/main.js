@@ -49,7 +49,7 @@ $(function() {
 });
 
 
-},{"./helpers":6,"./model/world":15,"./settings":16,"./visualizer/visualizer":24,"dat-gui":27,"jquery":31,"underscore":32}],2:[function(require,module,exports){
+},{"./helpers":6,"./model/world":16,"./settings":17,"./visualizer/visualizer":25,"dat-gui":28,"jquery":32,"underscore":33}],2:[function(require,module,exports){
 'use strict';
 var Curve, Segment;
 
@@ -303,7 +303,7 @@ Rect = (function() {
 module.exports = Rect;
 
 
-},{"../helpers":6,"./point":3,"./segment":5,"underscore":32}],5:[function(require,module,exports){
+},{"../helpers":6,"./point":3,"./segment":5,"underscore":33}],5:[function(require,module,exports){
 'use strict';
 var Segment;
 
@@ -554,7 +554,7 @@ Car = (function() {
 module.exports = Car;
 
 
-},{"../helpers":6,"./trajectory":14,"underscore":32}],8:[function(require,module,exports){
+},{"../helpers":6,"./trajectory":15,"underscore":33}],8:[function(require,module,exports){
 'use strict';
 var ControlSignals, random, settings,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -640,15 +640,63 @@ ControlSignals = (function() {
 module.exports = ControlSignals;
 
 
-},{"../helpers":6,"../settings":16}],9:[function(require,module,exports){
+},{"../helpers":6,"../settings":17}],9:[function(require,module,exports){
 'use strict';
-var ControlSignals, Intersection, Rect, _;
+var ControlSignals, ControlSignals3, random, settings,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+random = Math.random;
+
+require('../helpers');
+
+settings = require('../settings');
+
+ControlSignals = require('./control-signals');
+
+ControlSignals3 = (function(_super) {
+  __extends(ControlSignals3, _super);
+
+  function ControlSignals3() {
+    return ControlSignals3.__super__.constructor.apply(this, arguments);
+  }
+
+  ControlSignals3.prototype.states = [['', '', '', 'LFR'], ['', 'LFR', '', ''], ['', '', 'LFR', ''], ['LFR', '', '', '']];
+
+  ControlSignals3.property('state', {
+    get: function() {
+      var stringState, x, _i, _len, _results;
+      stringState = this.states[this.stateNum % this.states.length];
+      if (this.intersection.roads.length <= 2) {
+        stringState = ['LFR', 'LFR', 'LFR', 'LFR'];
+      }
+      _results = [];
+      for (_i = 0, _len = stringState.length; _i < _len; _i++) {
+        x = stringState[_i];
+        _results.push(this._decode(x));
+      }
+      return _results;
+    }
+  });
+
+  return ControlSignals3;
+
+})(ControlSignals);
+
+module.exports = ControlSignals3;
+
+
+},{"../helpers":6,"../settings":17,"./control-signals":8}],10:[function(require,module,exports){
+'use strict';
+var ControlSignals, ControlSignals3, Intersection, Rect, _;
 
 require('../helpers');
 
 _ = require('underscore');
 
 ControlSignals = require('./control-signals');
+
+ControlSignals3 = require('./control-signals3');
 
 Rect = require('../geom/rect');
 
@@ -658,7 +706,7 @@ Intersection = (function() {
     this.id = _.uniqueId('intersection');
     this.roads = [];
     this.inRoads = [];
-    this.controlSignals = new ControlSignals(this);
+    this.controlSignals = new ControlSignals3(this);
   }
 
   Intersection.copy = function(intersection) {
@@ -668,7 +716,7 @@ Intersection = (function() {
     _.extend(result, intersection);
     result.roads = [];
     result.inRoads = [];
-    result.controlSignals = new ControlSignals(result);
+    result.controlSignals = new ControlSignals3(result);
     return result;
   };
 
@@ -703,7 +751,7 @@ Intersection = (function() {
 module.exports = Intersection;
 
 
-},{"../geom/rect":4,"../helpers":6,"./control-signals":8,"underscore":32}],10:[function(require,module,exports){
+},{"../geom/rect":4,"../helpers":6,"./control-signals":8,"./control-signals3":9,"underscore":33}],11:[function(require,module,exports){
 'use strict';
 var LanePosition, _;
 
@@ -784,7 +832,7 @@ LanePosition = (function() {
 module.exports = LanePosition;
 
 
-},{"../helpers":6,"underscore":32}],11:[function(require,module,exports){
+},{"../helpers":6,"underscore":33}],12:[function(require,module,exports){
 'use strict';
 var Lane, Segment, _;
 
@@ -908,7 +956,7 @@ Lane = (function() {
 module.exports = Lane;
 
 
-},{"../geom/segment":5,"../helpers":6,"underscore":32}],12:[function(require,module,exports){
+},{"../geom/segment":5,"../helpers":6,"underscore":33}],13:[function(require,module,exports){
 'use strict';
 var Pool;
 
@@ -972,7 +1020,7 @@ Pool = (function() {
 module.exports = Pool;
 
 
-},{"../helpers":6}],13:[function(require,module,exports){
+},{"../helpers":6}],14:[function(require,module,exports){
 'use strict';
 var Lane, Road, max, min, settings, _;
 
@@ -1086,7 +1134,7 @@ Road = (function() {
 module.exports = Road;
 
 
-},{"../helpers":6,"../settings":16,"./lane":11,"underscore":32}],14:[function(require,module,exports){
+},{"../helpers":6,"../settings":17,"./lane":12,"underscore":33}],15:[function(require,module,exports){
 'use strict';
 var Curve, LanePosition, Trajectory, max, min, _;
 
@@ -1345,7 +1393,7 @@ Trajectory = (function() {
 module.exports = Trajectory;
 
 
-},{"../geom/curve":2,"../helpers":6,"./lane-position":10,"underscore":32}],15:[function(require,module,exports){
+},{"../geom/curve":2,"../helpers":6,"./lane-position":11,"underscore":33}],16:[function(require,module,exports){
 'use strict';
 var Car, Intersection, Pool, Rect, Road, World, random, settings, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -1594,7 +1642,7 @@ World = (function() {
 module.exports = World;
 
 
-},{"../geom/rect":4,"../helpers":6,"../settings":16,"./car":7,"./intersection":9,"./pool":12,"./road":13,"underscore":32}],16:[function(require,module,exports){
+},{"../geom/rect":4,"../helpers":6,"../settings":17,"./car":7,"./intersection":10,"./pool":13,"./road":14,"underscore":33}],17:[function(require,module,exports){
 'use strict';
 var settings;
 
@@ -1623,7 +1671,7 @@ settings = {
 module.exports = settings;
 
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 var Graphics, PI,
   __slice = [].slice;
@@ -1767,7 +1815,7 @@ Graphics = (function() {
 module.exports = Graphics;
 
 
-},{"../helpers.coffee":6}],18:[function(require,module,exports){
+},{"../helpers.coffee":6}],19:[function(require,module,exports){
 'use strict';
 var Tool, ToolHighlighter, settings,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1825,7 +1873,7 @@ ToolHighlighter = (function(_super) {
 module.exports = ToolHighlighter;
 
 
-},{"../helpers.coffee":6,"../settings.coffee":16,"./tool.coffee":23}],19:[function(require,module,exports){
+},{"../helpers.coffee":6,"../settings.coffee":17,"./tool.coffee":24}],20:[function(require,module,exports){
 'use strict';
 var Intersection, Tool, ToolIntersectionBuilder,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1894,7 +1942,7 @@ ToolIntersectionBuilder = (function(_super) {
 module.exports = ToolIntersectionBuilder;
 
 
-},{"../helpers.coffee":6,"../model/intersection.coffee":9,"./tool.coffee":23}],20:[function(require,module,exports){
+},{"../helpers.coffee":6,"../model/intersection.coffee":10,"./tool.coffee":24}],21:[function(require,module,exports){
 'use strict';
 var Tool, ToolIntersectionMover,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1951,7 +1999,7 @@ ToolIntersectionMover = (function(_super) {
 module.exports = ToolIntersectionMover;
 
 
-},{"../helpers.coffee":6,"./tool.coffee":23}],21:[function(require,module,exports){
+},{"../helpers.coffee":6,"./tool.coffee":24}],22:[function(require,module,exports){
 'use strict';
 var Mover, Tool,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -2007,7 +2055,7 @@ Mover = (function(_super) {
 module.exports = Mover;
 
 
-},{"../helpers.coffee":6,"./tool.coffee":23}],22:[function(require,module,exports){
+},{"../helpers.coffee":6,"./tool.coffee":24}],23:[function(require,module,exports){
 'use strict';
 var Road, Tool, ToolRoadBuilder,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -2092,7 +2140,7 @@ ToolRoadBuilder = (function(_super) {
 module.exports = ToolRoadBuilder;
 
 
-},{"../helpers.coffee":6,"../model/road.coffee":13,"./tool.coffee":23}],23:[function(require,module,exports){
+},{"../helpers.coffee":6,"../model/road.coffee":14,"./tool.coffee":24}],24:[function(require,module,exports){
 'use strict';
 var $, METHODS, Point, Rect, Tool, _;
 
@@ -2183,7 +2231,7 @@ Tool = (function() {
 module.exports = Tool;
 
 
-},{"../geom/point.coffee":3,"../geom/rect.coffee":4,"../helpers.coffee":6,"jquery":31,"jquery-mousewheel":30,"underscore":32}],24:[function(require,module,exports){
+},{"../geom/point.coffee":3,"../geom/rect.coffee":4,"../helpers.coffee":6,"jquery":32,"jquery-mousewheel":31,"underscore":33}],25:[function(require,module,exports){
 'use strict';
 var $, Graphics, PI, Point, Rect, ToolHighlighter, ToolIntersectionBuilder, ToolIntersectionMover, ToolMover, ToolRoadBuilder, Visualizer, Zoomer, chroma, settings, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -2443,7 +2491,7 @@ Visualizer = (function() {
 module.exports = Visualizer;
 
 
-},{"../geom/point":3,"../geom/rect":4,"../helpers":6,"../settings":16,"./graphics":17,"./highlighter":18,"./intersection-builder":19,"./intersection-mover":20,"./mover":21,"./road-builder":22,"./zoomer":25,"chroma-js":26,"jquery":31,"underscore":32}],25:[function(require,module,exports){
+},{"../geom/point":3,"../geom/rect":4,"../helpers":6,"../settings":17,"./graphics":18,"./highlighter":19,"./intersection-builder":20,"./intersection-mover":21,"./mover":22,"./road-builder":23,"./zoomer":26,"chroma-js":27,"jquery":32,"underscore":33}],26:[function(require,module,exports){
 'use strict';
 var Point, Rect, Tool, Zoomer, max, min, settings,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -2553,7 +2601,7 @@ Zoomer = (function(_super) {
 module.exports = Zoomer;
 
 
-},{"../geom/point.coffee":3,"../geom/rect.coffee":4,"../helpers.coffee":6,"../settings.coffee":16,"./tool.coffee":23}],26:[function(require,module,exports){
+},{"../geom/point.coffee":3,"../geom/rect.coffee":4,"../helpers.coffee":6,"../settings.coffee":17,"./tool.coffee":24}],27:[function(require,module,exports){
 // Generated by CoffeeScript 1.6.2
 /** echo  * @license echo  * while read i do echo  *  done echo
 */
@@ -4418,10 +4466,10 @@ module.exports = Zoomer;
 
 }).call(this);
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = require('./vendor/dat.gui')
 module.exports.color = require('./vendor/dat.color')
-},{"./vendor/dat.color":28,"./vendor/dat.gui":29}],28:[function(require,module,exports){
+},{"./vendor/dat.color":29,"./vendor/dat.gui":30}],29:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -5177,7 +5225,7 @@ dat.color.math = (function () {
 })(),
 dat.color.toString,
 dat.utils.common);
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -8838,7 +8886,7 @@ dat.dom.CenteredDiv = (function (dom, common) {
 dat.utils.common),
 dat.dom.dom,
 dat.utils.common);
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /*! Copyright (c) 2013 Brandon Aaron (http://brandon.aaron.sh)
  * Licensed under the MIT License (LICENSE.txt).
  *
@@ -9061,7 +9109,7 @@ dat.utils.common);
 
 }));
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.3
  * http://jquery.com/
@@ -18268,7 +18316,7 @@ return jQuery;
 
 }));
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
