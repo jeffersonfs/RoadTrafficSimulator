@@ -18,5 +18,6 @@ settings =
   lightsFlipInterval: 20
   gridSize: 14
   defaultTimeFactor: 5
+  numberMaxForLane: 1
 
 module.exports = settings
