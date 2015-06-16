@@ -3,6 +3,7 @@
 {max, min, random, sqrt} = Math
 require '../helpers'
 _ = require 'underscore'
+settings = require '../settings'
 Trajectory = require './trajectory'
 
 class Car
@@ -11,8 +12,18 @@ class Car
     @color = (300 + 240 * random() | 0) % 360
     @_speed = 0
     @width = 1.7
-    @length = 3 + 2 * random()
-    @maxSpeed = 30
+    #TODO statictic in Balsas-MA, change for settings
+    r = random() * 100
+    sumCM = settings.dataCity.quantCar + settings.dataCity.quantMediumCar
+    sumMB = sumCM + settings.dataCity.quantBigCar
+    if r < settings.dataCity.quantCar
+      @length = settings.dataCity.car + random()
+    if settings.dataCity.quantCar <= r < sumCM
+      @length = settings.dataCity.mediumCar + 0.2*random()
+    if sumCM <= r < sumMB
+      @length = settings.dataCity.bigCar + 5*random()
+    #@length = 3 + 2 * random()
+    @maxSpeed = 10
     @s0 = 2
     @timeHeadway = 1.5
     @maxAcceleration = 1

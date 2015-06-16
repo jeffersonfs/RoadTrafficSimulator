@@ -37,7 +37,7 @@ class Lane
   @property 'rightBorder',
     get: ->
       new Segment @sourceSegment.target, @targetSegment.source
-
+    
   update: ->
     @middleLine = new Segment @sourceSegment.center, @targetSegment.center
     @length = @middleLine.length
@@ -70,5 +70,13 @@ class Lane
         bestDistance = distance
         next = o
     next
+    
+  getDistanceCarIntersectionRight: ->
+    nearDistance = Infinity
+    for id, o of @carsPositions
+      distance = this.length - o.length / 2 - o.position
+      if not o.free and 0 < distance < nearDistance
+        nearDistance = distance
+    nearDistance
 
 module.exports = Lane

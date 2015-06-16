@@ -8,12 +8,15 @@ ControlSignals = require './control-signals'
 class NotControlSignals extends ControlSignals
 
   states: [
-    ['L', '', 'L', ''],
-    ['FR', '', 'FR', ''],
-    ['', 'L', '', 'L'],
-    ['', 'FR', '', 'FR']
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['', '', '', '']
   ]
 
+
+  signed: ->
+    return false
 
   @property 'state',
     get: ->

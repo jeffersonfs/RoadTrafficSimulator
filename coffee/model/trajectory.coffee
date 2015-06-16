@@ -60,6 +60,10 @@ class Trajectory
       throw Error 'no right turns from this lane'
     return true
 
+  isValidInIntersectionNotControl: (nextLane) ->
+    if ( nextLane.getDistanceCarIntersectionRight() > @car.length * 10 )
+      return true
+
   canEnterIntersection: ->
     nextLane = @car.nextLane
     sourceLane = @current.lane
@@ -68,8 +72,16 @@ class Trajectory
     turnNumber = sourceLane.getTurnDirection nextLane
     sideId = sourceLane.road.targetSideId
     #TODO changed here for intersection not control signals
+    if not intersection.controlSignals.signed()
+      #If the car for turn right only driver
+      if turnNumber is 2 then return true
+      if turnNumber is 0 or turnNumber is 1 and @isValidInIntersectionNotControl(nextLane)
+        return true
+      else return false
+      #if turnNumber < 2
+      #intersection
     intersection.controlSignals.state[sideId][turnNumber]
-
+    
   getDistanceToIntersection: ->
     distance = @current.lane.length - @car.length / 2 - @current.position
     if not @isChangingLanes then max distance, 0 else Infinity

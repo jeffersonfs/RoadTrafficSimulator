@@ -21,4 +21,7 @@ class ControlSignals3 extends ControlSignals
         stringState = ['LFR', 'LFR', 'LFR', 'LFR']
       (@_decode x for x in stringState)
 
+  signed: ->
+    return true
+
 module.exports = ControlSignals3

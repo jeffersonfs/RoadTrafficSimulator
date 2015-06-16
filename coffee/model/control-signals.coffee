@@ -9,6 +9,7 @@ class ControlSignals
     @time = 0
     @flipMultiplier = 1 + (random() * 0.4 - 0.2) # 0.8 - 1.2
     @stateNum = 0
+    @contTime = 0
 
   states: [
     ['L', '', 'L', ''],
@@ -18,9 +19,20 @@ class ControlSignals
   ]
 
   @STATE = [RED: 0, GREEN: 1]
+    
+  @TYPES = [SIGNED: 0, NOT_SIGNED: 1]
+  
+  @property 'type',
+    get: -> @TYPES.SIGNED
+    
+  signed: ->
+    return true
 
   @property 'flipInterval',
     get: -> @flipMultiplier * settings.lightsFlipInterval
+
+  @property 'contTimeValue',
+   get: -> @contTime
 
   _decode: (str) ->
     state = [0, 0, 0]
@@ -41,6 +53,7 @@ class ControlSignals
 
   onTick: (delta) =>
     @time += delta
+    @contTime += delta
     if @time > @flipInterval
       @flip()
       @time -= @flipInterval

@@ -37,13 +37,24 @@ class Visualizer
     @previousTime = 0
     @timeFactor = settings.defaultTimeFactor
     @debug = false
+    
+    #Add the semaphoric
+    @_semaphoric = false
 
   drawIntersection: (intersection, alpha) ->
-    color = intersection.color or settings.colors.intersection
+    if intersection.controlSignals.signed()
+      color = intersection.color or settings.colors.intersection
+    else 
+      color = intersection.color or settings.colors.intersectionNotSigned
     @graphics.drawRect intersection.rect
     @ctx.lineWidth = 0.4
     @graphics.stroke settings.colors.roadMarking
     @graphics.fillRect intersection.rect, color, alpha
+    if @debug
+      @ctx.save()
+      @ctx.fillStyle = "black"
+      @ctx.font = "2px Arial"
+      @ctx.fillText intersection.controlSignals.contTimeValue, intersection.rect.center().x, intersection.rect.center().y
 
   drawSignals: (road) ->
     lightsColors = [settings.colors.redLight, settings.colors.greenLight]
@@ -181,6 +192,11 @@ class Visualizer
     get: -> @_running
     set: (running) ->
       if running then @start() else @stop()
+
+  @property 'semaphoric',
+    get: -> @_semaphoric
+    set: (semaphoric) ->
+      if semaphoric then @_semaphoric = true else @_semaphoric = false
 
   start: ->
     unless @_running

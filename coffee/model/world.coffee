@@ -9,6 +9,7 @@ Road = require './road'
 Pool = require './pool'
 Rect = require '../geom/rect'
 settings = require '../settings'
+dataCruzamento = require '../data'
 
 class World
   constructor: ->
@@ -26,11 +27,32 @@ class World
     @roads = new Pool Road, obj.roads
     @cars = new Pool Car, obj.cars
     @carsNumber = 0
+    @dataCont = 0
+    @probabilidadeCont = 0
 
   save: ->
     data = _.extend {}, this
     delete data.cars
     localStorage.world = JSON.stringify data
+    link = document.createElement("a")
+    alert(localStorage.world)
+    link.download = "Dados"
+    link.href = localStorage.world
+    link.click()
+    
+  loadFile: ->
+    data = settings.jsonCruzamento
+    data = data and JSON.parse data
+    return unless data?
+    @clear()
+    @carsNumber = data.carsNumber or 0
+    for id, intersection of data.intersections
+      @addIntersection Intersection.copy intersection
+    for id, road of data.roads
+      road = Road.copy road
+      road.source = @getIntersection road.source
+      road.target = @getIntersection road.target
+      @addRoad road
 
   load: ->
     data = localStorage.world
@@ -95,8 +117,15 @@ class World
       @removeCar car unless car.alive
 
   refreshCars: ->
-    @addRandomCar() if @cars.length < @carsNumber
-    @removeRandomCar() if @cars.length > @carsNumber
+    #Procurar intersection
+    intersection = _.find @intersections.all(), (intersection) -> intersection.id is "cruzamento"
+    intersection.controlSignals.contTimeValue = 0 if intersection.controlSignals.contTimeValue > 43201
+    @dataCont = 0 if intersection.controlSignals.contTimeValue is 0
+    @probabilidadeCont = 0 if @dataCont is 0
+    @alterarProbabilidade() if dataCruzamento.probalidadeTempo[@probabilidadeCont] < intersection.controlSignals.contTimeValue
+    @addRandomCar() if dataCruzamento.carAddSec[@dataCont] < intersection.controlSignals.contTimeValue
+    #@addRandomCar() if @cars.length < @carsNumber
+    #@removeRandomCar() if @cars.length > @carsNumber
 
   addRoad: (road) ->
     @roads.put road
@@ -121,9 +150,38 @@ class World
 
   getIntersection: (id) ->
     @intersections.get id
+    
+  choiceRoad= (road, idFind) ->
+    road.id = idFind
 
+  alterarProbabilidade: ->
+    settings.direcao.acucena = dataCruzamento.probabilidade[dataCruzamento.probalidadeTempo[@probabilidadeCont]].acucena
+    settings.direcao.fatima = dataCruzamento.probabilidade[dataCruzamento.probalidadeTempo[@probabilidadeCont]].fatima
+    settings.direcao.centro = dataCruzamento.probabilidade[dataCruzamento.probalidadeTempo[@probabilidadeCont]].centro
+    settings.direcao.nazare = dataCruzamento.probabilidade[dataCruzamento.probalidadeTempo[@probabilidadeCont]].nazare
+    @probabilidadeCont++
+  
   addRandomCar: ->
-    road = _.sample @roads.all()
+    #road = _.sample @roads.all()
+    @dataCont += 1
+    road = null
+    if settings.experiment
+      r = (random() * 1000) % 100 + 1
+      sumF = settings.direcao.acucena + settings.direcao.fatima
+      sumC = sumF + settings.direcao.centro
+      sumN = sumN + settings.direcao.nazare
+      if r <= settings.direcao.acucena
+        road = _.find @roads.all(), (road) -> road.id is 'roadAcucena1' 
+      else
+        if r <= sumF
+          road = _.find @roads.all(), (road) -> road.id is 'roadFatima1' 
+        else
+          if r <= sumC
+            road = _.find @roads.all(), (road) -> road.id is 'roadCentro1'
+          else
+            road = _.find @roads.all(), (road) -> road.id is 'roadNazare1'
+      
+    
     if road?
       lane = _.sample road.lanes
       @addCar new Car lane if lane?
